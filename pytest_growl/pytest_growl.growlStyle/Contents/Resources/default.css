@@ -1,0 +1,14 @@
+body{
+    background-image:url('wallpaper.jpg');
+    color:#ffffff;
+    font-size:12px;
+    font-family:Monaco;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+#icon {
+    display:none;
+}
+#emergency.notification: {
+    color:red;
+}

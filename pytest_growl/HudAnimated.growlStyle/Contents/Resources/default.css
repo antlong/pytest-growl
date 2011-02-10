@@ -1,0 +1,97 @@
+/*	 Modified by Paradox (http://paradoxdgn.com) for flip effect
+	 Originally by Rogie King
+ This is licensed under the Creative Commons Attribution-Noncommercial-Share Alike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA. */
+
+body { word-wrap: break-word;}
+
+.notification { 
+	border: 1px solid rgba(15,15,15,0.4); 
+	border-bottom-color: rgba(15,15,15,0.6);
+	-webkit-border-radius: 10px; 
+	color: rgba(255,255,255,0.7);
+	text-shadow: 0 -1px 0 rgba(0,0,0,1);
+	font: 11px/1.4 "Lucida Sans","Lucida Grande", Lucida, sans;
+	background:-webkit-gradient(linear, left top, left bottom, from(rgba(15,15,15,0.75)), to(rgba(15,15,15,0.95)) );
+	-webkit-box-shadow: 0 0 15px rgba(255,255,255,0.3);
+	-webkit-transition: all 0.2s linear;
+	z-index: -100;
+	
+	-webkit-perspective: 1000;
+	-webkit-transform-style: preserve-3d;
+	
+	-webkit-animation-name: flip; 
+  	-webkit-animation-duration: 1s; 
+  	-webkit-animation-iteration-count: 1; 
+}
+#emergency.notification {
+	background:-webkit-gradient(linear, left top, left bottom, from(rgba(60,15,15,0.75)), to(rgba(255,15,15,0.95)) );
+}
+.notification>div{
+	-webkit-border-radius: 10px; 
+	-webkit-box-shadow: 0 1px 8px rgba(0,0,0,0.8);
+	background:url(images/glow.png) center -1px no-repeat;
+  	border: 1px solid rgba(255,255,255,0.12);	
+  	border-top-color: rgba(255,255,255,0.35);
+  	border-bottom-color: rgba(255,255,255,0);
+  	-webkit-animation-direction: alternate;
+}
+.notification>div>div{
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,0.1)), to(rgba(255,255,255,0)), color-stop(0.3, rgba(255,255,255,0.05)), color-stop(0.3, rgba(255,255,255,0)) );
+	-webkit-border-radius: 3px;
+	overflow: hidden;
+}
+.notification:hover{
+	border-color: rgba(0,0,0,1);
+}
+.notification:hover>div{
+	-webkit-animation-name: pulse; 
+  	-webkit-animation-duration: 900ms; 
+  	-webkit-animation-iteration-count: infinite; 
+}
+.title{
+	color: rgba(255,255,255,0.9);	
+	font-size: 13px;
+	margin: 0 0 2px 0;
+	padding: 0 0 0 10px;
+	-webkit-transition: all 0.2s linear;
+}
+.icon{
+	display:none;
+}
+.message{
+	padding: 0 0 0 10px;
+	margin: 0;
+}
+
+@-webkit-keyframes flip {
+	from {
+		-webkit-transform: rotateX(180deg);
+	}
+	to {
+		-webkit-transform: rotateX(0deg);
+	}
+}
+
+@-webkit-keyframes flash {
+  from {
+    -webkit-box-shadow: 0 0 15px rgba(255,255,255,0.3);
+  }
+  50% {
+  	-webkit-box-shadow: 0 0 15px rgba(255,255,255,0.6);
+  }
+  to { 
+    -webkit-box-shadow: 0 0 15px rgba(255,255,255,0.3);
+  }
+}
+
+@-webkit-keyframes pulse {
+  from {
+  	-webkit-box-shadow: 0 1px 8px rgba(0,0,0,0.8);
+  }
+  50% {
+  	-webkit-box-shadow: 0 0 50px rgba(255,255,255,0.5);
+  }
+  to { 
+	-webkit-box-shadow: 0 0 20px rgba(255,255,255,0.15);
+  }
+}
