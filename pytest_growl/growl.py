@@ -3,12 +3,9 @@ import struct
 from cStringIO import StringIO
 from hashlib import md5
 _GROWL_UDP_PORT = 9887
-_DEFAULT_TITLE = "Test Complete"
-APPLICATION_NAME = "pytest"
 _GROWL_VERSION = 1
 _PACKET_TYPE_REGISTRATION = 0
 _PACKET_TYPE_NOTIFICATION = 1
-_GROWL_PRIORITIES = {0: 0, 1: 1, 2: 2, -2: 3, -1: 4}
 
 
 def pytest_addoption(parser):
@@ -23,6 +20,7 @@ def pytest_addoption(parser):
 def pytest_terminal_summary(terminalreporter):
     if terminalreporter.config.option.growl:
         tr = terminalreporter
+        import pdb; pdb.set_trace()
         try:
             passes = len(tr.stats['passed'])
         except KeyError:
@@ -35,8 +33,8 @@ def pytest_terminal_summary(terminalreporter):
             message_to_send = "No tests were ran."
             send_growl(message=message_to_send, title="Alert:")
         else:
-            message_to_send = "Passed: %s Failed: %s" % (passes, fails)
-            send_growl(message=message_to_send)
+            message_to_send = "%s Passed %s Failed" % (passes, fails)
+            send_growl(message=message_to_send, title="Tests Complete")
 
 
 class SignedStructStream(object):
@@ -64,7 +62,7 @@ class SignedStructStream(object):
         return self._hash.digest()
     
 
-def build_registration_packet(application_name, notifications):
+def brp(application_name, notifications):
     returned = SignedStructStream()
     returned.write("b", _GROWL_VERSION)
     returned.write("b", _PACKET_TYPE_REGISTRATION)
@@ -80,46 +78,27 @@ def build_registration_packet(application_name, notifications):
     return returned.getvalue()
 
 
-def build_notification_packet(application_name, notification_name, title, message, priority, sticky):
-    flags = ((_GROWL_PRIORITIES.get(priority, 0) & 007) * 2)
-    if sticky:
-        flags |= 1
+def bnp(application_name, notification_name, title, message, priority, sticky):
+    flags = (priority & 0x07) * 1
     returned = SignedStructStream()
-    returned.write("!BBHHHHH",
-                   _GROWL_VERSION,
-                   _PACKET_TYPE_NOTIFICATION,
-                   flags,
-                   len(notification_name),
-                   len(title),
-                   len(message),
-                   len(application_name),
-                   )
+    returned.write("!BBHHHHH", 1, 1, flags, len(notification_name), len(title), len(message), len(application_name),)
     for x in (notification_name, title, message, application_name):
         returned.writeBuffer(x.encode('utf-8'))
     returned.sign()
     return returned.getvalue()
 
 
-def send_growl(host="127.0.0.1", message='',
-          title=_DEFAULT_TITLE,
-          port=_GROWL_UDP_PORT,
-          sticky=False,
-          priority=1,
-          notification='Notification',
-          application=APPLICATION_NAME,
-          _socket=socket.socket,
-          _build_notification_packet=build_notification_packet,
-          _build_registration_packet=build_registration_packet,
-          ):
+def send_growl(message='', title='', _socket=socket.socket, _bnp=bnp, _brp=brp):
     s = _socket(socket.AF_INET, socket.SOCK_DGRAM)
-    reg_packet = _build_registration_packet(application_name=application, notifications=[notification])
-    s.sendto(reg_packet, (host, port))
-    notification = _build_notification_packet(
-        priority=priority,
+    reg_packet = _brp(application_name="pytest", notifications=["Notification"])
+    s.sendto(reg_packet, ("127.0.0.1", 9887))
+    notification = _bnp(
+        priority=4,
         message=message,
         title=title,
-        notification_name=notification,
-        application_name=application,
-        sticky=sticky)
-    s.sendto(notification, (host, port))
+        notification_name="Notification",
+        application_name="pytest",
+        sticky=False)
+    s.sendto(notification, ("127.0.0.1", 9887))
     s.close()
+
