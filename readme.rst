@@ -8,6 +8,8 @@ This plugin sends growl notifications when your test session begins and ends, al
 
 .. image:: http://files.droplr.com/files/138477723/xvjZ.Screen%20shot%202011-02-11%20at%2015%3A06%3A58.png
 
+The theme displayed in the image is included if you wish to use it.
+
 
 Installation
 ____________
