@@ -20,7 +20,6 @@ def pytest_addoption(parser):
 def pytest_terminal_summary(terminalreporter):
     if terminalreporter.config.option.growl:
         tr = terminalreporter
-        import pdb; pdb.set_trace()
         try:
             passes = len(tr.stats['passed'])
         except KeyError:
