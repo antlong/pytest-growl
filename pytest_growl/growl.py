@@ -28,12 +28,20 @@ def pytest_terminal_summary(terminalreporter):
             fails = len(tr.stats['failed'])
         except KeyError:
             fails = 0
-        if passes & fails == 0:
+        try:
+            skips = len(tr.stats['deselected'])
+        except KeyError:
+            skips = 0
+        if (passes + fails + skips) == 0:
             message_to_send = "No tests were ran."
             send_growl(message=message_to_send, title="Alert:")
         else:
-            message_to_send = "%s Passed %s Failed" % (passes, fails)
-            send_growl(message=message_to_send, title="Tests Complete")
+            if not skips:
+                message_to_send = "%s Passed %s Failed" % (passes, fails)
+                send_growl(message=message_to_send, title="Tests Complete")
+            else:
+                message_to_send = "%s Passed %s Failed %s Skipped" % (passes, fails, skips)
+                send_growl(message=message_to_send, title="Tests Complete")
 
 
 class SignedStructStream(object):
