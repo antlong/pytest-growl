@@ -1,3 +1,4 @@
+import time
 import socket
 import struct
 from cStringIO import StringIO
@@ -17,6 +18,11 @@ def pytest_addoption(parser):
                     help='Enable Growl notifications.')
 
 
+def pytest_sessionstart(session):
+    if session.config.option.growl:
+        send_growl(title="Session Begins At", message="%s" % time.strftime("%I:%M:%S %p"))
+
+
 def pytest_terminal_summary(terminalreporter):
     if terminalreporter.config.option.growl:
         tr = terminalreporter
@@ -33,15 +39,16 @@ def pytest_terminal_summary(terminalreporter):
         except KeyError:
             skips = 0
         if (passes + fails + skips) == 0:
-            message_to_send = "No tests were ran."
-            send_growl(message=message_to_send, title="Alert:")
+            send_growl(title="Alert", message="No Tests Ran")
+            send_growl(title="Session Ended At", message="%s" % time.strftime("%I:%M:%S %p"))
+            return
         else:
             if not skips:
                 message_to_send = "%s Passed %s Failed" % (passes, fails)
-                send_growl(message=message_to_send, title="Tests Complete")
             else:
                 message_to_send = "%s Passed %s Failed %s Skipped" % (passes, fails, skips)
-                send_growl(message=message_to_send, title="Tests Complete")
+        send_growl(title="Tests Complete", message=message_to_send)
+        send_growl(title="Session Ended At", message="%s" % time.strftime("%I:%M:%S %p"))
 
 
 class SignedStructStream(object):
