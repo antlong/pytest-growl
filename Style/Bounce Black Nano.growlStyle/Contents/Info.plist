@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Bounce Black Nano</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.Growl.WebKit.BounceBlackNano</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Bounce Black Nano</string>
+	<key>CFBundlePackageType</key>
+	<string>GWKS</string>
+	<key>CFBundleShortVersionString</key>
+	<string>Bounce Black Nano 1.0</string>
+	<key>CFBundleSignature</key>
+	<string>MIMA</string>
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	<key>CSResourcesFileMapped</key>
+	<string>yes</string>
+	<key>GrowlHasShadow</key>
+	<false/>
+	<key>GrowlPaddingX</key>
+	<string>0</string>
+	<key>GrowlPaddingY</key>
+	<string>0</string>
+	<key>GrowlPluginAuthor</key>
+	<string>Michael Matochkin</string>
+</dict>
+</plist>
