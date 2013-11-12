@@ -7,4 +7,4 @@ setup(
     name="pytest-growl",
     keywords="pytest, pytest-, growl, py.test",
     packages=['pytest_growl'],
-    entry_points={'pytest11': ['pyest_growl = pytest_growl.growl', ]},)
+    entry_points={'pytest11': ['pytest_growl = pytest_growl.growl', ]},)
