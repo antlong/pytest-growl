@@ -3,6 +3,10 @@ import socket
 import struct
 from cStringIO import StringIO
 from hashlib import md5
+try:
+    import gntp.notifier
+except ImportError:
+    pass
 _GROWL_UDP_PORT = 9887
 _GROWL_VERSION = 1
 _PACKET_TYPE_REGISTRATION = 0
@@ -56,25 +60,25 @@ class SignedStructStream(object):
         super(SignedStructStream, self).__init__()
         self._stream = StringIO()
         self._hash = md5()
-    
+
     def writeBuffer(self, buff, sign=True):
         if sign:
             self._hash.update(buff)
         self._stream.write(buff)
-    
+
     def sign(self):
         self.writeBuffer(self._hash.digest(), sign=False)
-    
+
     def write(self, format, *data):
         packed = struct.pack(format, *data)
         self.writeBuffer(packed)
-    
+
     def getvalue(self):
         return self._stream.getvalue()
-    
+
     def gethash(self):
         return self._hash.digest()
-    
+
 
 def brp(application_name, notifications):
     returned = SignedStructStream()
@@ -103,16 +107,19 @@ def bnp(application_name, notification_name, title, message, priority, sticky):
 
 
 def send_growl(message='', title='', _socket=socket.socket, _bnp=bnp, _brp=brp):
-    s = _socket(socket.AF_INET, socket.SOCK_DGRAM)
-    reg_packet = _brp(application_name="pytest", notifications=["Notification"])
-    s.sendto(reg_packet, ("127.0.0.1", 9887))
-    notification = _bnp(
-        priority=4,
-        message=message,
-        title=title,
-        notification_name="Notification",
-        application_name="pytest",
-        sticky=False)
-    s.sendto(notification, ("127.0.0.1", 9887))
-    s.close()
+    if 'gntp' in globals():
+        gntp.notifier.mini(message, title=title, applicationName='pytest', noteType='Notification')
+    else:
+        s = _socket(socket.AF_INET, socket.SOCK_DGRAM)
+        reg_packet = _brp(application_name="pytest", notifications=["Notification"])
+        s.sendto(reg_packet, ("127.0.0.1", 9887))
+        notification = _bnp(
+            priority=4,
+            message=message,
+            title=title,
+            notification_name="Notification",
+            application_name="pytest",
+            sticky=False)
+        s.sendto(notification, ("127.0.0.1", 9887))
+        s.close()
 
