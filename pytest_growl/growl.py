@@ -13,6 +13,8 @@ _PACKET_TYPE_REGISTRATION = 0
 _PACKET_TYPE_NOTIFICATION = 1
 
 
+QUIET_MODE_INI='quiet_growl'
+
 def pytest_addoption(parser):
     """Adds options to control growl notifications."""
     group = parser.getgroup('terminal reporting')
@@ -20,16 +22,21 @@ def pytest_addoption(parser):
                     dest='growl',
                     default=True,
                     help='Enable Growl notifications.')
+    parser.addini(QUIET_MODE_INI,
+                  default=False,
+                  help='Minimize notifications (only results).')
 
 
 def pytest_sessionstart(session):
-    if session.config.option.growl:
+    if (session.config.option.growl
+        and not session.config.getini(QUIET_MODE_INI)):
         send_growl(title="Session Begins At", message="%s" % time.strftime("%I:%M:%S %p"))
 
 
 def pytest_terminal_summary(terminalreporter):
     if terminalreporter.config.option.growl:
         tr = terminalreporter
+        quiet_mode = tr.config.getini(QUIET_MODE_INI)
         try:
             passes = len(tr.stats['passed'])
         except KeyError:
@@ -44,7 +51,8 @@ def pytest_terminal_summary(terminalreporter):
             skips = 0
         if (passes + fails + skips) == 0:
             send_growl(title="Alert", message="No Tests Ran")
-            send_growl(title="Session Ended At", message="%s" % time.strftime("%I:%M:%S %p"))
+            if not quiet_mode:
+                send_growl(title="Session Ended At", message="%s" % time.strftime("%I:%M:%S %p"))
             return
         else:
             if not skips:
@@ -52,7 +60,8 @@ def pytest_terminal_summary(terminalreporter):
             else:
                 message_to_send = "%s Passed %s Failed %s Skipped" % (passes, fails, skips)
         send_growl(title="Tests Complete", message=message_to_send)
-        send_growl(title="Session Ended At", message="%s" % time.strftime("%I:%M:%S %p"))
+        if not quiet_mode:
+            send_growl(title="Session Ended At", message="%s" % time.strftime("%I:%M:%S %p"))
 
 
 class SignedStructStream(object):
